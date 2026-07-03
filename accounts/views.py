@@ -17,13 +17,13 @@ def register(request):
         username = request.POST['username']
         email = request.POST['email']
 
-        # Only allow @nitdelhi.ac.in
-        allowed_domain = "nitdelhi.ac.in"
-        if email.split("@")[-1] != allowed_domain:
-            return render(request, "register.html", {
-                "error": "Only NIT Delhi emails allowed!",
-                "data": request.POST
-            })
+        # # Only allow @nitdelhi.ac.in
+        # allowed_domain = "nitdelhi.ac.in"
+        # if email.split("@")[-1] != allowed_domain:
+        #     return render(request, "register.html", {
+        #         "error": "Only NIT Delhi emails allowed!",
+        #         "data": request.POST
+        #     })
 
         if User.objects.filter(username=username).exists():
             return render(request, "register.html", {
@@ -56,7 +56,7 @@ def register(request):
         request.session['otp'] = otp
 
         send_mail(
-            subject="PeerFinder OTP Verification",
+            subject="TeamForge OTP Verification",
             message=f"Your OTP is {otp}",
             from_email="peerpartnernitd@gmail.com",
             recipient_list=[email],

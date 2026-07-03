@@ -1,155 +1,191 @@
-# # matching/logic.py
-# from itertools import combinations
-
-# # Function to compute similarity between two students
-# def similarity(student1, student2):
-#     skill_match = len(set(student1['skills']) & set(student2['skills']))
-#     interest_match = len(set(student1['interests']) & set(student2['interests']))
-#     return skill_match + interest_match  # simple sum, can weight if needed
-
-# # Build graph (adjacency list)
-# def build_graph(students, threshold=1):
-#     graph = {s['id']: [] for s in students}
-#     for s1, s2 in combinations(students, 2):
-#         sim = similarity(s1, s2)
-#         if sim >= threshold:
-#             graph[s1['id']].append(s2['id'])
-#             graph[s2['id']].append(s1['id'])
-#     return graph
-
-# # Union-Find to form clusters
-# def find(parent, x):
-#     if parent[x] != x:
-#         parent[x] = find(parent, parent[x])
-#     return parent[x]
-
-# def union(parent, x, y):
-#     px = find(parent, x)
-#     py = find(parent, y)
-#     if px != py:
-#         parent[py] = px
-
-# def cluster_students(graph):
-#     parent = {node: node for node in graph}
-#     for node, neighbors in graph.items():
-#         for neighbor in neighbors:
-#             union(parent, node, neighbor)
-#     clusters = {}
-#     for node in parent:
-#         root = find(parent, node)
-#         if root not in clusters:
-#             clusters[root] = []
-#         clusters[root].append(node)
-#     return clusters
-
-# # Recommend partners for a student
-# def recommend_partners(student_id, students, top_n=3):
-#     target = next(s for s in students if s['id'] == student_id)
-#     scores = []
-#     for s in students:
-#         if s['id'] != student_id:
-#             scores.append((s['id'], similarity(target, s)))
-#     scores.sort(key=lambda x: x[1], reverse=True)
-#     return scores[:top_n]
-
-# # Example usage (only runs if you run this file directly)
-# if __name__ == "__main__":
-#     from .dummy_data import students
-#     g = build_graph(students)
-#     clusters = cluster_students(g)
-#     print("Clusters:", clusters)
-#     print("Recommendations for Alice:", recommend_partners(1, students))
-
-
-
-#with actual profile data
-# matching/logic.py
 from itertools import combinations
 from accounts.models import Profile
 
 # --------------------------
-# 1️⃣ Helper to fetch students
+# Configuration
+# --------------------------
+SKILL_WEIGHT = 2.0
+INTEREST_WEIGHT = 1.5
+BRANCH_DIVERSITY_WEIGHT = 1.0
+YEAR_WEIGHT = 0.5
+MAX_TEAM_SIZE = 4
+
+
+# --------------------------
+# Fetch student data
 # --------------------------
 def get_student_data():
     students = []
+
     for profile in Profile.objects.all():
         students.append({
-            "id": profile.id,
+            "id": profile.user.id,
             "name": profile.name,
-            "skills": profile.skills_list(),       # convert comma-separated to list
+            "skills": profile.skills_list(),
             "interests": profile.interest_list(),
             "year": profile.year,
             "branch": profile.branch,
             "gender": profile.gender,
             "user_id": profile.user.id,
         })
+
     return students
 
-# --------------------------
-# 2️⃣ Similarity function
-# --------------------------
-def similarity(student1, student2):
-    skill_match = len(set(student1['skills']) & set(student2['skills']))
-    interest_match = len(set(student1['interests']) & set(student2['interests']))
-    return skill_match + interest_match  # simple sum, can weight if needed
 
 # --------------------------
-# 3️⃣ Build graph
+# Compatibility Score
 # --------------------------
-def build_graph(students, threshold=1):
-    graph = {s['id']: [] for s in students}
+def compatibility_score(student1, student2):
+
+    score = 0
+
+    # Skills
+    common_skills = set(student1["skills"]) & set(student2["skills"])
+    score += len(common_skills) * SKILL_WEIGHT
+
+    # Interests
+    common_interests = set(student1["interests"]) & set(student2["interests"])
+    score += len(common_interests) * INTEREST_WEIGHT
+
+    # Branch diversity
+    if student1["branch"] != student2["branch"]:
+        score += BRANCH_DIVERSITY_WEIGHT
+
+    # Same / nearby year
+    try:
+        diff = abs(int(student1["year"]) - int(student2["year"]))
+
+        if diff == 0:
+            score += YEAR_WEIGHT
+
+        elif diff == 1:
+            score += YEAR_WEIGHT / 2
+
+    except:
+        pass
+
+    return round(score, 2)
+
+
+# --------------------------
+# Weighted Graph
+# --------------------------
+def build_weighted_graph(students, threshold=0):
+
+    graph = {s["id"]: [] for s in students}
+    edges = []
+
     for s1, s2 in combinations(students, 2):
-        sim = similarity(s1, s2)
-        if sim >= threshold:
-            graph[s1['id']].append(s2['id'])
-            graph[s2['id']].append(s1['id'])
-    return graph
+
+        weight = compatibility_score(s1, s2)
+
+        if weight > threshold:
+
+            graph[s1["id"]].append((s2["id"], weight))
+            graph[s2["id"]].append((s1["id"], weight))
+
+            edges.append((s1["id"], s2["id"], weight))
+
+    edges.sort(key=lambda x: x[2], reverse=True)
+
+    return graph, edges
+
 
 # --------------------------
-# 4️⃣ Union-Find clustering
+# Greedy Team Formation
 # --------------------------
-def find(parent, x):
-    if parent[x] != x:
-        parent[x] = find(parent, parent[x])
-    return parent[x]
+def form_teams(students, max_team_size=MAX_TEAM_SIZE):
 
-def union(parent, x, y):
-    px = find(parent, x)
-    py = find(parent, y)
-    if px != py:
-        parent[py] = px
+    if not students:
+        return {}
 
-def cluster_students(graph):
-    parent = {node: node for node in graph}
-    for node, neighbors in graph.items():
-        for neighbor in neighbors:
-            union(parent, node, neighbor)
-    clusters = {}
-    for node in parent:
-        root = find(parent, node)
-        if root not in clusters:
-            clusters[root] = []
-        clusters[root].append(node)
-    return clusters
+    student_map = {s["id"]: s for s in students}
+
+    assigned = set()
+
+    teams = {}
+
+    team_no = 1
+
+    for student in students:
+
+        if student["id"] in assigned:
+            continue
+
+        team_ids = [student["id"]]
+        assigned.add(student["id"])
+
+        while len(team_ids) < max_team_size:
+
+            best_student = None
+            best_score = -1
+
+            for candidate in students:
+
+                if candidate["id"] in assigned:
+                    continue
+
+                avg = 0
+
+                for member in team_ids:
+                    avg += compatibility_score(
+                        student_map[member],
+                        candidate
+                    )
+
+                avg /= len(team_ids)
+
+                if avg > best_score:
+                    best_score = avg
+                    best_student = candidate["id"]
+
+            if best_student is None:
+                break
+
+            assigned.add(best_student)
+            team_ids.append(best_student)
+
+        teams[team_no] = [student_map[i] for i in team_ids]
+
+        team_no += 1
+
+    return teams
+
 
 # --------------------------
-# 5️⃣ Recommendations
+# Recommendations
 # --------------------------
 def recommend_partners(student_id, students, top_n=5):
-    target = next(s for s in students if s['id'] == student_id)
+
+    target = next(s for s in students if s["id"] == student_id)
+
     scores = []
-    for s in students:
-        if s['id'] != student_id:
-            scores.append((s['id'], similarity(target, s)))
+
+    for student in students:
+
+        if student["id"] == student_id:
+            continue
+
+        scores.append(
+            (
+                student["id"],
+                compatibility_score(target, student)
+            )
+        )
+
     scores.sort(key=lambda x: x[1], reverse=True)
+
     return scores[:top_n]
 
+
 # --------------------------
-# 6️⃣ Example usage (optional)
+# Testing
 # --------------------------
 if __name__ == "__main__":
-    students = get_student_data()  # pull from DB
-    g = build_graph(students)
-    clusters = cluster_students(g)
-    print("Clusters:", clusters)
-    print("Recommendations for first student:", recommend_partners(students[0]['id'], students))
+
+    students = get_student_data()
+
+    print(form_teams(students))
+
+    if students:
+        print(recommend_partners(students[0]["id"], students))

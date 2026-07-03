@@ -2,7 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
-from .logic import build_graph, cluster_students, recommend_partners, get_student_data
+from .logic import (
+    build_weighted_graph,
+    form_teams,
+    recommend_partners,
+    get_student_data,
+)
+
 from accounts.models import Invitation  # invite system included
 
 
@@ -12,11 +18,7 @@ from accounts.models import Invitation  # invite system included
 @login_required
 def show_clusters(request):
     students = get_student_data()
-    g = build_graph(students)
-    clusters_ids = cluster_students(g)
-
-    student_dict = {s["id"]: s for s in students}
-    clusters = {cid: [student_dict[i] for i in ids] for cid, ids in clusters_ids.items()}
+    clusters = form_teams(students)
 
     return render(request, "matching/clusters.html", {"clusters": clusters})
 
@@ -68,17 +70,28 @@ def show_recommendations(request, student_id):
 @login_required
 def show_graph(request):
     students = get_student_data()
-    g = build_graph(students)
+    graph, edges = build_weighted_graph(students)
 
     nodes = students
     links = []
 
-    for src, neighbors in g.items():
-        for tgt in neighbors:
-            if {"source": tgt, "target": src} not in links:
-                links.append({"source": src, "target": tgt})
+    seen = set()
 
-    return render(request, "matching/graph.html", {"nodes": nodes, "links": links})
+    for src, neighbors in graph.items():
+        for tgt, weight in neighbors:
+            key = tuple(sorted((src, tgt)))
+            if key not in seen:
+                seen.add(key)
+                links.append({
+                    "source": src,
+                    "target": tgt,
+                    "weight": weight,
+                })
+
+    return render(request, "matching/graph.html", {
+        "nodes": nodes,
+        "links": links,
+    })
 
 
 # --------------------------

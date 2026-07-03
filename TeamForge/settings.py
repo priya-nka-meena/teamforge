@@ -51,7 +51,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'peerfinder.urls'
+ROOT_URLCONF = 'TeamForge.urls'
 
 TEMPLATES = [
     {
@@ -69,7 +69,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'peerfinder.wsgi.application'
+WSGI_APPLICATION = 'TeamForge.wsgi.application'
 
 
 # Database
