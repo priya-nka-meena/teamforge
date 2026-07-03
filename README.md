@@ -1,4 +1,5 @@
 # TeamForge
+A graph-based intelligent team formation platform that recommends compatible teammates using weighted compatibility scoring and greedy optimization.
 
 ## Intelligent Team Formation Platform
 
@@ -26,14 +27,7 @@ TeamForge automates team formation using:
 - **Intelligent Recommendations**: Data-driven partner suggestions
 - **Invitation System**: Collaborative team building workflow
 
-### Why Compatibility-Based Grouping Works
-
-Research shows that teams formed with complementary skills and shared interests demonstrate:
-- 40% higher project completion rates
-- Improved communication and collaboration
-- Better distribution of technical expertise
-- Enhanced learning outcomes through peer-to-peer knowledge transfer
-- Reduced conflict through aligned working styles
+TeamForge aims to improve team quality by considering multiple compatibility factors instead of relying on random or manual grouping.
 
 ---
 
@@ -66,7 +60,7 @@ Research shows that teams formed with complementary skills and shared interests 
 
 ### Backend
 
-- **Django 4.x**: Python web framework
+- **Django 5.2**: Python web framework
 - **Python 3.8+**: Core programming language
 - **SQLite**: Embedded database engine
 
@@ -279,7 +273,7 @@ OUTPUT: Dictionary of teams {team_id: [students]}
 | **Team Size Control** | Uncontrolled | Strict MAX_TEAM_SIZE limit |
 | **Scalability** | O(n) union operations | O(n²k) but produces better teams |
 
-### Why Greedy is Superior
+### Why Greedy was chosen
 
 The greedy algorithm is specifically designed for team formation because:
 1. **Quality Over Speed**: Prioritizes team quality over computational efficiency
@@ -350,27 +344,15 @@ TeamForge/
 
 ---
 
-## 📸 Screenshots
+## 🎯 Key Engineering Highlights
 
-### Dashboard
-![Dashboard](screenshots/dashboard.png)
+- Designed a weighted graph-based compatibility engine for intelligent student matching.
+- Implemented a Greedy Optimization algorithm to form balanced project teams.
+- Built secure email OTP authentication and profile management using Django.
+- Developed a team invitation workflow for collaboration.
+- Visualized compatibility relationships using interactive D3.js network graphs.
+- Structured the application following Django's MVT architecture.
 
-### Registration
-![Registration](screenshots/register.png)
-
-### Profile Management
-![Profile](screenshots/profile.png)
-
-### Team Recommendations
-![Recommendations](screenshots/recommendations.png)
-
-### Team Formation
-![Teams](screenshots/teams.png)
-
-### Network Graph
-![Graph](screenshots/graph.png)
-
----
 
 ## 🚀 Installation
 
@@ -383,7 +365,7 @@ TeamForge/
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/TeamForge.git
+git clone https://github.com/priya-nka-meena/teamforge.git
 cd TeamForge
 ```
 
@@ -448,61 +430,22 @@ http://127.0.0.1:8000
 
 ## 🔮 Future Enhancements
 
-### Planned Features
+- **AI-Based Compatibility Prediction**: Explore machine learning models to improve team recommendations using historical collaboration data.
 
-- **AI-Powered Matching**: Machine learning models for improved compatibility prediction
-- **Personality Compatibility**: MBTI or Big Five personality integration
-- **Skill Level Weighting**: Proficiency levels for more accurate matching
-- **Multi-College Support**: Cross-institution team formation
-- **Real-Time Chat**: In-app communication for team members
-- **Team Analytics**: Performance tracking and insights
-- **Faculty Dashboard**: Instructor tools for monitoring and intervention
-- **Cloud Deployment**: Docker containers for easy deployment
-- **PostgreSQL Support**: Option for production-grade database
-- **Mobile Application**: React Native or Flutter mobile app
-- **API Endpoints**: RESTful API for third-party integrations
-- **Calendar Integration**: Schedule coordination for team meetings
-- **File Sharing**: Collaborative document management
-- **Video Conferencing**: Integrated video call functionality
+- **Personality-Based Matching**: Incorporate personality assessments (e.g., MBTI or Big Five) as an additional compatibility factor.
+
+- **Real-Time Team Chat**: Enable in-app messaging for seamless communication after team formation.
+
+- **Faculty Dashboard**: Allow instructors to create projects, monitor teams, and review team composition.
+
+- **Production Deployment**: Deploy the application using Docker and PostgreSQL for scalability and production readiness.
+
+- **REST API Support**: Expose APIs to integrate TeamForge with other university platforms and mobile applications.
 
 ---
 
-## 👨‍💻 Author
+## 👩‍💻 Author
 
-**[Your Name]**
-- GitHub: [https://github.com/yourusername](https://github.com/yourusername)
-- LinkedIn: [https://linkedin.com/in/yourprofile](https://linkedin.com/in/yourprofile)
-- Email: your.email@example.com
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
-## 📞 Support
-
-For support, email your.email@example.com or open an issue in the GitHub repository.
-
----
-
-## 🙏 Acknowledgments
-
-- Django documentation and community
-- D3.js visualization library
-- Bootstrap UI framework
-- All contributors and users of TeamForge
+**Priyanka Meena**
+- B.Tech, National Institute of Technology Delhi
+- GitHub: https://github.com/priya-nka-meena
