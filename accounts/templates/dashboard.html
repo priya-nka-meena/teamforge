@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | PeerFinder</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+
+    <style>
+      :root {
+        --purple-1: #673de6;
+        --purple-2: #4a00e0;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        background: url("{% static 'image/dashboard.png' %}") center/cover
+          no-repeat;
+        font-family: "Poppins", sans-serif;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .dashboard-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 60px 20px;
+        background: rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(6px);
+        border-radius: 16px;
+        margin: 40px auto;
+        max-width: 800px;
+        color: #fff;
+      }
+
+      .dashboard-container h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+      }
+
+      .dashboard-container p {
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+      }
+
+      .btn-primary {
+        background: var(--purple-1);
+        border: none;
+        font-size: 1.2rem;
+        border-radius: 12px;
+        padding: 12px 28px;
+        transition: 0.3s;
+      }
+
+      .btn-primary:hover {
+        background: #5425d6;
+        transform: translateY(-2px);
+      }
+
+      @media (max-width: 768px) {
+        .dashboard-container {
+          padding: 40px 15px;
+          margin: 30px 15px;
+        }
+        .dashboard-container h2 {
+          font-size: 2rem;
+        }
+        .dashboard-container p {
+          font-size: 1.1rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- 🔥 Custom PeerFinder Navbar -->
+    {% include 'navbar.html' %}
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+      <h2>Welcome, {{ request.user.username }} 👋</h2>
+      <p>Let’s find your ideal peer and explore your network!</p>
+
+      <a href="{% url 'matching_home' %}" class="btn btn-primary">
+        Go to Matching 🔗
+      </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
