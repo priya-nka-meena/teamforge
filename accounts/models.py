@@ -56,36 +56,3 @@ class Invitation(models.Model):
     def __str__(self):
         return f"{self.sender.username} → {self.receiver.username} [{self.status}]"
 
-preferred_role = models.CharField(
-    max_length=20,
-    choices=[
-        ("Frontend","Frontend"),
-        ("Backend","Backend"),
-        ("AI/ML","AI/ML"),
-        ("UI/UX","UI/UX"),
-        ("DSA","DSA"),
-        ("DevOps","DevOps"),
-    ],
-    default="Backend"
-)
-
-experience_level = models.CharField(
-    max_length=20,
-    choices=[
-        ("Beginner","Beginner"),
-        ("Intermediate","Intermediate"),
-        ("Advanced","Advanced"),
-    ],
-    default="Beginner"
-)
-
-availability = models.CharField(
-    max_length=20,
-    choices=[
-        ("Morning","Morning"),
-        ("Afternoon","Afternoon"),
-        ("Evening","Evening"),
-        ("Flexible","Flexible"),
-    ],
-    default="Flexible"
-)

@@ -157,6 +157,12 @@
             value="{{ profile.gender }}"
             required
           />
+          <input
+            type="text"
+            name="contact_number"
+            placeholder="Contact Number"
+            value="{{ profile.contact_number }}"
+          />
 
           <button type="submit"><i class="fa fa-save"></i> Save Changes</button>
           <a href="{% url 'profile' %}" class="btn-back"

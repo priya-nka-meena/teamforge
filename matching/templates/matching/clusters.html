@@ -109,17 +109,13 @@
       {% for cluster_id, members in clusters.items %}
         <div class="cluster-card">
           <div class="cluster-title">
-            {% if members|length > 1 %}
-              🌟 Main Similarity Group
-            {% else %}
-              🔹 Isolated Student
-            {% endif %}
+            Team {{ cluster_id }}
           </div>
 
           <ul>
             {% for student in members %}
               <li>
-                {{ student.name }} • {{ student.branch }} • Year {{ student.year }}
+                {{ student.name }} • {{ student.branch }} • Year {{ student.year }} • Skills: {{ student.skills }}
               </li>
             {% endfor %}
           </ul>

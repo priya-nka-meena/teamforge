@@ -123,8 +123,10 @@
         <a href="{% url 'student_profile' rec.user_obj.id %}" class="rec-name">
           {{ rec.student.name }}
         </a>
-        <p class="rec-branch">{{ rec.student.branch }}</p>
-        <p class="rec-score">Similarity Score: <span>{{ rec.score }}</span></p>
+        <p class="rec-branch">{{ rec.student.branch }} • Year {{ rec.student.year }}</p>
+        <p class="rec-branch">Skills: {{ rec.student.skills }}</p>
+        <p class="rec-branch">Interests: {{ rec.student.interests }}</p>
+        <p class="rec-score">Compatibility Score: <span>{{ rec.score }}</span></p>
       </div>
 
       <div class="rec-action">
